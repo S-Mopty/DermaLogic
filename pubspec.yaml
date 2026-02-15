@@ -1,0 +1,43 @@
+name: dermalogic_v3
+description: "Application de recommandations dermatologiques personnalisees par IA"
+publish_to: 'none'
+version: 3.0.0+1
+
+environment:
+  sdk: ^3.10.7
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  flutter_riverpod: ^2.6.1
+
+  # Navigation
+  go_router: ^14.8.1
+
+  # HTTP client
+  http: ^1.3.0
+
+  # Storage
+  path_provider: ^2.1.5
+  shared_preferences: ^2.3.5
+
+  # Animations
+  flutter_animate: ^4.5.2
+  shimmer: ^3.0.0
+
+  # Utils
+  intl: ^0.20.2
+  uuid: ^4.5.1
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
