@@ -161,11 +161,67 @@ Retourne UNIQUEMENT le JSON valide, rien d'autre. Pas de commentaires, pas de ma
 class AppColors {
   AppColors._();
 
+  // Couleurs de base
   static const Color fond = Color(0xFF0F0F1A);
   static const Color panneau = Color(0xFF16213E);
   static const Color carte = Color(0xFF1A1A2E);
+  static const Color carteHover = Color(0xFF252545);
   static const Color accent = Color(0xFF4ECCA3);
+  static const Color accentHover = Color(0xFF3DB892);
   static const Color danger = Color(0xFFE94560);
+  static const Color violet = Color(0xFF9B59B6);
   static const Color texteSecondaire = Color(0xFF888888);
   static const Color textePrincipal = Color(0xFFFFFFFF);
+  static const Color etoile = Color(0xFFF1C40F);
+
+  // Couleurs par categorie de produit
+  static const Map<String, Color> couleurCategorie = {
+    'cleanser': Color(0xFF00B4D8),
+    'treatment': Color(0xFFF9ED69),
+    'moisturizer': Color(0xFF4ECCA3),
+    'protection': Color(0xFFF38181),
+  };
+
+  // Couleurs par moment d'utilisation
+  static const Map<String, Color> couleurMoment = {
+    'matin': Color(0xFFF9ED69),
+    'journee': Color(0xFF00B4D8),
+    'soir': Color(0xFF9B59B6),
+    'tous': Color(0xFF4ECCA3),
+  };
+
+  // Labels des moments
+  static const Map<String, String> labelMoment = {
+    'matin': 'MATIN',
+    'journee': 'JOURNEE',
+    'soir': 'SOIR',
+    'tous': 'TOUS MOMENTS',
+  };
+
+  // Couleurs par niveau UV
+  static const Map<String, Color> couleurUv = {
+    'Faible': Color(0xFF4ECCA3),
+    'Modere': Color(0xFFF9ED69),
+    'Eleve': Color(0xFFF38181),
+    'Tres eleve': Color(0xFFE94560),
+    'Extreme': Color(0xFF9B59B6),
+  };
+
+  // Couleurs par niveau d'humidite
+  static const Map<String, Color> couleurHumidite = {
+    'Tres sec': Color(0xFFE94560),
+    'Sec': Color(0xFFF9ED69),
+    'Normal': Color(0xFF4ECCA3),
+    'Humide': Color(0xFF00B4D8),
+  };
+
+  // Couleurs par niveau de pollution
+  static const Map<String, Color> couleurPollution = {
+    'Inconnu': Color(0xFF888888),
+    'Excellent': Color(0xFF4ECCA3),
+    'Bon': Color(0xFF4ECCA3),
+    'Modere': Color(0xFFF9ED69),
+    'Mauvais': Color(0xFFF38181),
+    'Tres mauvais': Color(0xFFE94560),
+  };
 }
