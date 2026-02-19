@@ -71,10 +71,10 @@ class ForecastCard extends StatelessWidget {
   }
 
   Color _uvColor(double uv) {
-    if (uv < 3) return AppColors.accent;
-    if (uv < 6) return const Color(0xFFF9ED69);
-    if (uv < 8) return const Color(0xFFF38181);
-    if (uv < 11) return AppColors.danger;
-    return AppColors.violet;
+    if (uv < 3) return AppColors.couleurUv['Faible']!;
+    if (uv < 6) return AppColors.couleurUv['Modere']!;
+    if (uv < 8) return AppColors.couleurUv['Eleve']!;
+    if (uv < 11) return AppColors.couleurUv['Tres eleve']!;
+    return AppColors.couleurUv['Extreme']!;
   }
 }

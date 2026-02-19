@@ -28,10 +28,22 @@ class AppShell extends ConsumerWidget {
         ) ??
         'Paris';
 
-    if (isDesktop) {
-      return _desktopLayout(context, currentPath, cityName);
-    }
-    return _mobileLayout(context, currentPath, cityName);
+    final scaffold = isDesktop
+        ? _desktopLayout(context, currentPath, cityName)
+        : _mobileLayout(context, currentPath, cityName);
+
+    // Empecher le bouton Back systeme de pop la derniere route GoRouter.
+    // Sur "/" → bloquer le pop (l'app reste ouverte).
+    // Sur une autre page → retourner a "/".
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && currentPath != '/') {
+          context.go('/');
+        }
+      },
+      child: scaffold,
+    );
   }
 
   Widget _desktopLayout(

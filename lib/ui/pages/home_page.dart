@@ -119,11 +119,19 @@ class _HomePageState extends ConsumerState<HomePage> {
     setState(() {
       _isAnalyzing = true;
       _statusMessage = 'Analyse IA en cours (~15-30s selon la connexion)...';
-      _statusColor = const Color(0xFFF9ED69);
+      _statusColor = AppColors.attention;
     });
 
     try {
-      final conditions = ref.read(meteoProvider).value!;
+      final conditions = ref.read(meteoProvider).value;
+      if (conditions == null) {
+        setState(() {
+          _isAnalyzing = false;
+          _statusMessage = 'Donnees meteo indisponibles';
+          _statusColor = AppColors.danger;
+        });
+        return;
+      }
       final previsions =
           _previsions ?? await ref.read(meteoProvider.notifier).obtenirPrevisions();
       final ville =
@@ -168,46 +176,60 @@ class _HomePageState extends ConsumerState<HomePage> {
     final analyseAsync = ref.watch(analyseProvider);
     final screenWidth = MediaQuery.sizeOf(context).width;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Section 1 : Conditions environnementales ──
-          _buildConditionsSection(meteoAsync, screenWidth),
+    return RefreshIndicator(
+      onRefresh: _actualiser,
+      color: AppColors.accent,
+      backgroundColor: AppColors.panneau,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Section 1 : Conditions environnementales ──
+            _buildConditionsSection(meteoAsync, screenWidth),
 
-          const SizedBox(height: 16),
+            const SizedBox(height: 16),
 
-          // ── Section 2 : Previsions 3 jours ──
-          if (_previsions != null && _previsions!.isNotEmpty)
-            _buildPrevisionsSection(screenWidth),
+            // ── Section 2 : Previsions 3 jours ──
+            if (_previsions != null && _previsions!.isNotEmpty)
+              _buildPrevisionsSection(screenWidth),
 
-          // ── Section 3 : Boutons d'analyse ──
-          _buildAnalyseButtons(),
+            // ── Section 3 : Boutons d'analyse ──
+            _buildAnalyseButtons(),
 
-          const SizedBox(height: 12),
+            const SizedBox(height: 12),
 
-          // ── Section 4 : Panneau detaille ──
-          _buildDetailPanel(),
+            // ── Section 4 : Panneau detaille ──
+            _buildDetailPanel(),
 
-          // ── Section 5 : Statut ──
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text(
-                _statusMessage,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: _statusColor,
+            // ── Section 5 : Statut ──
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 300),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: _statusColor,
+                  ),
+                  child: Text(
+                    _statusMessage,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
-          ),
 
-          // ── Section 6 : Resultats ──
-          _buildResultats(analyseAsync),
-        ],
+            // ── Section 6 : Resultats ──
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 400),
+              switchInCurve: Curves.easeIn,
+              switchOutCurve: Curves.easeOut,
+              child: _buildResultats(analyseAsync),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -225,27 +247,38 @@ class _HomePageState extends ConsumerState<HomePage> {
           // Header
           Row(
             children: [
-              const Text(
-                'Conditions actuelles',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              const Expanded(
+                child: Text(
+                  'Conditions actuelles',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
-              const Spacer(),
-              ElevatedButton.icon(
-                onPressed: _isAnalyzing ? null : _actualiser,
-                icon: const Icon(Icons.refresh, size: 16),
-                label: const Text('Actualiser'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accent,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  textStyle: const TextStyle(fontSize: 12),
-                ),
-              ),
+              const SizedBox(width: 8),
+              meteoAsync.isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.accent,
+                      ),
+                    )
+                  : ElevatedButton.icon(
+                      onPressed: _isAnalyzing ? null : _actualiser,
+                      icon: const Icon(Icons.refresh, size: 16),
+                      label: const Text('Actualiser'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        textStyle: const TextStyle(fontSize: 12),
+                      ),
+                    ),
             ],
           ),
           const SizedBox(height: 16),
@@ -598,37 +631,52 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget _buildResultats(AsyncValue<Map<String, dynamic>?> analyseAsync) {
     return analyseAsync.when(
       loading: () => const Center(
+        key: ValueKey('analyse-loading'),
         child: Padding(
           padding: EdgeInsets.all(24),
           child: CircularProgressIndicator(),
         ),
       ),
       error: (e, _) => SectionPanel(
+        key: const ValueKey('analyse-error'),
         child: Text(
           'Erreur d\'analyse : $e',
           style: const TextStyle(color: AppColors.danger, fontSize: 13),
         ),
       ),
       data: (data) {
-        if (data == null) return const SizedBox.shrink();
+        if (data == null) return const SizedBox.shrink(key: ValueKey('analyse-empty'));
         return _buildResultatContent(data);
       },
     );
   }
 
+  /// Parse une liste de routines de maniere securisee.
+  List<Map<String, dynamic>> _parseRoutineList(dynamic data) {
+    if (data is! List) return [];
+    return data
+        .map((e) => e is Map
+            ? Map<String, dynamic>.from(e)
+            : <String, dynamic>{'produit': e.toString(), 'raison': ''})
+        .toList();
+  }
+
+  /// Parse une liste de strings de maniere securisee.
+  List<String> _parseStringList(dynamic data) {
+    if (data is! List) return [];
+    return data.map((e) => e.toString()).toList();
+  }
+
   Widget _buildResultatContent(Map<String, dynamic> data) {
     final resume = data['resume'] as String? ?? '';
-    final routineMatin =
-        (data['routine_matin'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-    final routineSoir =
-        (data['routine_soir'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-    final alertes =
-        (data['alertes'] as List<dynamic>?)?.cast<String>() ?? [];
-    final activites =
-        (data['activites_jour'] as List<dynamic>?)?.cast<String>() ?? [];
+    final routineMatin = _parseRoutineList(data['routine_matin']);
+    final routineSoir = _parseRoutineList(data['routine_soir']);
+    final alertes = _parseStringList(data['alertes']);
+    final activites = _parseStringList(data['activites_jour']);
     final conseil = data['conseils_jour'] as String? ?? '';
 
     return SectionPanel(
+      key: const ValueKey('analyse-result'),
       title: 'Resultat de l\'analyse',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -653,7 +701,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFFF9ED69),
+                color: AppColors.attention,
               ),
             ),
             const SizedBox(height: 6),
@@ -729,7 +777,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF00B4D8),
+                color: AppColors.info,
               ),
             ),
             const SizedBox(height: 6),

@@ -76,8 +76,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: hasKey
-                            ? AppColors.accent.withValues(alpha: 0.2)
-                            : AppColors.danger.withValues(alpha: 0.2),
+                            ? AppColors.accent.withAlpha(51)
+                            : AppColors.danger.withAlpha(51),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -183,6 +183,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   Future<void> _saveKey() async {
     await ref.read(settingsProvider.notifier).saveGeminiKey(_keyCtrl.text.trim());
+    if (!mounted) return;
     setState(() {
       _saveStatus = 'Cle sauvegardee avec succes';
       _saveStatusColor = AppColors.accent;

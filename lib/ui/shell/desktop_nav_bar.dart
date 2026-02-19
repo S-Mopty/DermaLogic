@@ -45,11 +45,15 @@ class DesktopNavBar extends StatelessWidget {
           const Spacer(),
 
           // Ville actuelle
-          Text(
-            cityName,
-            style: const TextStyle(
-              color: AppColors.texteSecondaire,
-              fontSize: 13,
+          Flexible(
+            child: Text(
+              cityName,
+              style: const TextStyle(
+                color: AppColors.texteSecondaire,
+                fontSize: 13,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           const SizedBox(width: 8),

@@ -3,9 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'ui/router/app_router.dart';
 import 'ui/theme/app_theme.dart';
+import 'utils/test_data.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Charger les donnees de test (ne fait rien si les fichiers existent deja)
+  await seedTestData();
+
   runApp(const ProviderScope(child: DermaLogicApp()));
 }
 

@@ -15,7 +15,16 @@ class HistoryPage extends ConsumerWidget {
     final histAsync = ref.watch(historiqueProvider);
     return histAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Erreur: $e')),
+      error: (e, _) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, color: AppColors.danger, size: 40),
+            const SizedBox(height: 12),
+            Text('Erreur: $e', style: const TextStyle(color: AppColors.danger, fontSize: 13), textAlign: TextAlign.center),
+          ],
+        ),
+      ),
       data: (entries) => _buildContent(entries),
     );
   }
@@ -85,7 +94,7 @@ class _HistoryCardState extends State<_HistoryCard> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: badgeColor.withValues(alpha: 0.2),
+                color: badgeColor.withAlpha(51),
                 borderRadius: BorderRadius.circular(10)),
               child: Text(isDetaille ? 'Detaillee' : 'Rapide',
                   style: TextStyle(fontSize: 10, color: badgeColor, fontWeight: FontWeight.w600)),
@@ -106,7 +115,10 @@ class _HistoryCardState extends State<_HistoryCard> {
             firstChild: const SizedBox.shrink(),
             secondChild: _expandedContent(e),
             crossFadeState: _expanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 250),
+            duration: const Duration(milliseconds: 300),
+            firstCurve: Curves.easeInOut,
+            secondCurve: Curves.easeInOut,
+            sizeCurve: Curves.easeInOut,
           ),
         ]),
       ),
@@ -161,7 +173,7 @@ class _HistoryCardState extends State<_HistoryCard> {
           Container(
             width: double.infinity, padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.accent.withValues(alpha: 0.1),
+              color: AppColors.accent.withAlpha(25),
               borderRadius: BorderRadius.circular(8)),
             child: Text('\u{1f4a1} ${e.conseilsJour}',
                 style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: AppColors.accent)),

@@ -51,6 +51,8 @@ class ProductCard extends StatelessWidget {
                     // Nom
                     Text(
                       product.nom,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -114,7 +116,7 @@ class ProductCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.2),
+        color: color.withAlpha(51),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(

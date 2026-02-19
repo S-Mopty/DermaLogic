@@ -173,6 +173,8 @@ class AppColors {
   static const Color texteSecondaire = Color(0xFF888888);
   static const Color textePrincipal = Color(0xFFFFFFFF);
   static const Color etoile = Color(0xFFF1C40F);
+  static const Color attention = Color(0xFFF9ED69);
+  static const Color info = Color(0xFF00B4D8);
 
   // Couleurs par categorie de produit
   static const Map<String, Color> couleurCategorie = {

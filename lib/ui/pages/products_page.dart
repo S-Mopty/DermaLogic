@@ -18,7 +18,20 @@ class ProductsPage extends ConsumerWidget {
     final produitsAsync = ref.watch(produitProvider);
     return produitsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: Text('Erreur: $e')),
+      error: (e, _) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, color: AppColors.danger, size: 40),
+            const SizedBox(height: 12),
+            Text(
+              'Erreur de chargement : $e',
+              style: const TextStyle(color: AppColors.danger, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
       data: (produits) => _buildContent(context, ref, produits),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,6 +8,21 @@ import '../pages/products_page.dart';
 import '../pages/profile_page.dart';
 import '../pages/settings_page.dart';
 import '../shell/app_shell.dart';
+
+/// Transition de page douce (fade).
+CustomTransitionPage<void> _fadePage({
+  required LocalKey key,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: key,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(opacity: animation, child: child);
+    },
+    transitionDuration: const Duration(milliseconds: 200),
+  );
+}
 
 /// Provider GoRouter pour la navigation.
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -18,23 +34,38 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: '/',
-            builder: (context, state) => const HomePage(),
+            pageBuilder: (context, state) => _fadePage(
+              key: state.pageKey,
+              child: const HomePage(),
+            ),
           ),
           GoRoute(
             path: '/produits',
-            builder: (context, state) => const ProductsPage(),
+            pageBuilder: (context, state) => _fadePage(
+              key: state.pageKey,
+              child: const ProductsPage(),
+            ),
           ),
           GoRoute(
             path: '/profil',
-            builder: (context, state) => const ProfilePage(),
+            pageBuilder: (context, state) => _fadePage(
+              key: state.pageKey,
+              child: const ProfilePage(),
+            ),
           ),
           GoRoute(
             path: '/historique',
-            builder: (context, state) => const HistoryPage(),
+            pageBuilder: (context, state) => _fadePage(
+              key: state.pageKey,
+              child: const HistoryPage(),
+            ),
           ),
           GoRoute(
             path: '/parametres',
-            builder: (context, state) => const SettingsPage(),
+            pageBuilder: (context, state) => _fadePage(
+              key: state.pageKey,
+              child: const SettingsPage(),
+            ),
           ),
         ],
       ),
